@@ -8,8 +8,9 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.template import RequestContext
 from django.template import loader, Context
-from StringIO import StringIO
-from cStringIO import StringIO
+#from StringIO import StringIO
+#from io import StringIO
+#from cStringIO import StringIO
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4, cm
@@ -27,6 +28,7 @@ import numpy as np
 import pandas as pd
 import random
 import time
+#import io
 #import marshal
 # Create your views here.
 def index(request):
@@ -46,7 +48,8 @@ def index(request):
             # redirect to a new URL (opcional)
 			formato=comprobar_Formato(request.FILES['data_escenario1'])
 			if formato==True:
-				comprobar=comprobar_Comillas_Comas(request.FILES['data_escenario1'])
+				inf=request.FILES['data_escenario1']
+				comprobar=comprobar_Comillas_Comas(inf)
 				if comprobar[0]==False:
 					separador=comprobar[1]
 					handle_uploaded_file(request.FILES['data_escenario1'])
@@ -301,40 +304,50 @@ def comprobar_Comillas_Comas(file):
 	comprobar=False
 	separador=""
 	for fila in file:
+		#print (fila)
 		contador_comas=0
 		dos_puntos=0
 		tabulador=0
 		puto_y_coma=0
-		for campo in fila:
-			if campo==",":
+		fila=list(str(fila))
+		#print (fila)
+		#for campo in fila:
+		if (',' in fila) or (';' in fila) or ('\\' in fila) or (':' in fila):
+			#print ("condicionn if")
+			posicion=fila.index('\\')
+			#print(posicion,"posicion")
+			if (',' in fila):
 				contador_comas+=1
-			if campo==":":
+			if (':' in fila):
 				dos_puntos+=1
-			if campo=="	":
+			if (fila[posicion+1]=='t'):
+				#print('tabulador')
 				tabulador+=1
-			if campo==";":
+			if (';' in fila):
 				puto_y_coma+=1
-			if campo=='"' or campo=="'":
+			if ('"' in fila):
+				#print ('hola')
 				comprobar=True
 				retornar.append(comprobar)
 				retornar.append(separador)
 				return retornar
-		if contador_comas==0 and dos_puntos==0 and tabulador==0 and puto_y_coma==0:
+		if (contador_comas==0 and dos_puntos==0 and tabulador==0 and puto_y_coma==0):
+			print('hola')
 			comprobar=True
 			retornar.append(comprobar)
 			retornar.append(separador)
 			return retornar
 		else:
-			if contador_comas!=0 and dos_puntos==0 and tabulador==0 and puto_y_coma==0:
+			if (contador_comas!=0 and dos_puntos==0 and tabulador==0 and puto_y_coma==0):
 				separador="," 
 			else:
-				if contador_comas==0 and dos_puntos!=0 and tabulador==0 and puto_y_coma==0:
+				if (contador_comas==0 and dos_puntos!=0 and tabulador==0 and puto_y_coma==0):
 					separador=":"
 				else:
-					if contador_comas==0 and dos_puntos==0 and tabulador!=0 and puto_y_coma==0:
+					if (contador_comas==0 and dos_puntos==0 and tabulador!=0 and puto_y_coma==0):
 						separador="	"
 					else:
-						if contador_comas==0 and dos_puntos==0 and tabulador==0 and puto_y_coma!=0:
+						if (contador_comas==0 and dos_puntos==0 and tabulador==0 and puto_y_coma!=0):
 							separador=";"
 						else:
 							comprobar=True
@@ -638,12 +651,18 @@ def ajustarComunidad(patrones, k2, umbral2, ajustar):
 		if len(igualcero)==0:
 
 			if len(diferentecero)!=0:
-				maximo=max(diferentecero)
+				#maximo=max(diferentecero)
+				#print(diferentecero,"lista")
+				maximo=0
+				for y in diferentecero:
+					if y['pd']>maximo:
+						maximo=y['pd']
+				#print(maximo,"maximo")
 				aleatorio=[]
 
 				for y in diferentecero:
 
-					if y['pd']==maximo['pd']:
+					if y['pd']==maximo:
 						aleatorio.append(y['posicion'])
 
 				a=random.sample(aleatorio,1)
@@ -710,10 +729,16 @@ def ajustarIndividuo(umbral2, k2, nuevoIndividuo, patrones):
 		if len(diferentecero)==0:
 			return retornar
 		else:
-			maximo=max(diferentecero)
+			#print (diferentecero)
+			#print (max(diferentecero), "maximo")
+			maximo=0
+			for y in diferentecero:
+				if y['pd']>maximo:
+					maximo=y['pd']
+			#maximo=max(diferentecero)
 			aleatorio=[]
 			for y in diferentecero:
-				if y['pd']==maximo['pd']:
+				if y['pd']==maximo:
 					aleatorio.append(y['posicion'])
 			#print "cumple la condicion"
 			a=random.sample(aleatorio,1)
@@ -815,7 +840,7 @@ def recolectarIndividuosUnion(patron_union, union, comunidades, patrones, k1, um
 					fusion=Union(individuosmovidos[0], tabla)
 					individuosmovidos[0]=fusion
 							
-	print union, "comunidades con los estudiantes mal ubicados "
+	#print (union, "comunidades con los estudiantes mal ubicados ")
 
 	#if (sorted(row)!=sorted(columnas_a_moverse) 
 	#	and sorted(columnas_a_moverse)!=sorted(comunidad_primera_actual) 
@@ -836,11 +861,11 @@ def recolectarIndividuosUnion(patron_union, union, comunidades, patrones, k1, um
 		patrones.append(patron_union)
 		individuosmovidos=[]
 
-	print union, "comunidades menos los estudiantes mal ubicados "
-	print columnas_a_moverse, "columnas a moverse"
+	#print (union, "comunidades menos los estudiantes mal ubicados ")
+	#print (columnas_a_moverse, "columnas a moverse")
 		#c+=1
 	##___________________________________________________
-	print individuosmovidos, "estudiantes movidos"
+	#print (individuosmovidos, "estudiantes movidos")
 
 	retornar.append(individuosmovidos)
 	retornar.append(comunidades)
@@ -1239,7 +1264,7 @@ def Separacion(patrones, comunidades):
 			suma+=valor
 			cont+=1
 		#print cont, "cont"
-	 	c+=1 
+		c+=1 
 	#print contador
 	if len(comunidades)==1:
 		separacion=0
@@ -1616,7 +1641,7 @@ def comunidadesCombinacion(request):
 		consulta2 = json.dumps( [{'k1': o.k1, 'k2': o.k2, 'umbral1': o.umbral1, 'umbral2': o.umbral2, 'cohesion': o.cohesion, 'separacion': o.separacion} for o in consulta] )
 		lista_seudonimos1 = json.dumps( lista_seudonimos )
 		req['seudonimo'] = lista_seudonimos1
-        req['consulta'] = consulta2
+		req['consulta'] = consulta2
         #req['id_combinacion'] = id_combinacion
         #print consulta2
 	return JsonResponse(req, safe=False)
@@ -1767,10 +1792,11 @@ def reporte_pdf(request, idCombinacion):
 	#doc=SimpleDocTemplate(response,pagesize=A4,rightMargin=72,leftMargin=72,topMargin=2,
 	#	bottomMargin=18,)
 	# Create the PDF object, using the response object as its "file."
-	#buffer=BytesIO()
-	temp = StringIO()
+	buffer=BytesIO()
+	#temp = StringIO()
+	#io.StringIO("some initial text data")
 	tamanio=len(comunidades_individuos)
-	p = canvas.Canvas(temp, pagesize=A4)
+	p = canvas.Canvas(buffer, pagesize=A4)
 	if ((tamanio>2 and numero_individuos<600) or (tamanio<=2 and numero_individuos<600)) or (tamanio>2 and numero_individuos>600):
 		p.setLineWidth(.3)
 		p.setFont('Helvetica',22)
@@ -1847,7 +1873,8 @@ def reporte_pdf(request, idCombinacion):
 	p.showPage()
 	p.save()
 	#doc.build(Story)
-	response.write(temp.getvalue())
+	response.write(buffer.getvalue())
+	buffer.close()
 	#response.write(Story)
 	return response
 

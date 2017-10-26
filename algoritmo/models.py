@@ -60,5 +60,6 @@ class Data(models.Model):
         db_table = 'data'
         verbose_name_plural = "Data"
 
-    def __unicode__(self):               # __unicode__ en Python 2
+    #def __unicode__(self):              # __unicode__ en Python 2
+    def __str__(self):
         return '%s' % (self.nombre)
