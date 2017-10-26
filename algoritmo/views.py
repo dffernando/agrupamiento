@@ -1669,14 +1669,17 @@ def ejecutar_combinacion(request, iddata):
 		data=limpiar_contenido(contenido, escenario)
 		if escenario==1:
 			consulta2=Combinaciones.objects.filter(k2=k2, umbral2=umbral2, 
-				data_iddata=iddata).values("idcombinaciones", 'cohesion', 'separacion', 'k1'
-				,'umbral1')
+				data_iddata=iddata,solucion=0).values("idcombinaciones", 'cohesion', 
+				'separacion', 'k1' ,'umbral1')
 			if len(consulta2)==0:
 				Escenario1(umbral2, k2, data, iddata, n_individuos, 2)
-				Escenario1(umbral2, k2, data, iddata, n_individuos, 3)
+				consulta2_propuesta=Combinaciones.objects.filter(k2=k2, umbral2=umbral2, 
+				data_iddata=iddata,solucion=1).count()
+				if consulta2_propuesta!=0:
+					Escenario1(umbral2, k2, data, iddata, n_individuos, 3)
 				consulta3=Combinaciones.objects.filter(k2=k2, umbral2=umbral2, 
-					data_iddata=iddata).values("idcombinaciones", 'cohesion', 'separacion', 
-					'k1','umbral1')
+					data_iddata=iddata,solucion=0).values("idcombinaciones", 'cohesion', 
+					'separacion', 'k1','umbral1')
 				cohesion=consulta3[0]["cohesion"]
 				separacion=consulta3[0]["separacion"]
 				k1=consulta3[0]["k1"]
@@ -1695,14 +1698,17 @@ def ejecutar_combinacion(request, iddata):
 			escenario=lista[0]["data_iddata__escenario"]
 		else:
 			consulta2=Combinaciones.objects.filter(k2=k2, k1=k1, umbral1=umbral1, 
-					umbral2=umbral2, data_iddata=iddata).values("idcombinaciones", 'cohesion', 
-					'separacion')
+					umbral2=umbral2, data_iddata=iddata,solucion=0).values("idcombinaciones", 
+					'cohesion', 'separacion')
 			if len(consulta2)==0:
 				Escenario2(umbral2, umbral1, k2, k1, data, iddata, n_individuos, 2)
-				Escenario2(umbral2, umbral1, k2, k1, data, iddata, n_individuos, 3)
+				consulta2_propuesta=Combinaciones.objects.filter(k2=k2, k1=k1, umbral1=umbral1, 
+					umbral2=umbral2, data_iddata=iddata,solucion=1).count()
+				if consulta2_propuesta!=0:
+					Escenario2(umbral2, umbral1, k2, k1, data, iddata, n_individuos, 3)
 				consulta3=Combinaciones.objects.filter(k2=k2, k1=k1, umbral1=umbral1, 
-					umbral2=umbral2, data_iddata=iddata).values("idcombinaciones", 'cohesion', 
-					'separacion')
+					umbral2=umbral2, data_iddata=iddata,solucion=0).values("idcombinaciones", 
+					'cohesion', 'separacion')
 				cohesion=consulta3[0]["cohesion"]
 				separacion=consulta3[0]["separacion"]
 				idcombinaciones=consulta3[0]["idcombinaciones"]
