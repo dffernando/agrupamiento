@@ -130,7 +130,7 @@
     font-style: normal;
 
     src: url();
-    src: url() format('embedded-opentype'), url('./fonts/slick.woff') format('woff'), url('./fonts/slick.ttf') format('truetype'), url('./fonts/slick.svg#slick') format('svg');
+    src: url() format('embedded-opentype'), url() format('woff'), url() format('truetype'), url() format('svg');
     
 }
 /* Arrows */
