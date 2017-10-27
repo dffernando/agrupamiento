@@ -25,7 +25,6 @@ class Combinaciones(models.Model):
     solucion = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = True
         db_table = 'combinaciones'
         verbose_name_plural = "Combinaciones"
 
@@ -39,7 +38,6 @@ class ComunidadesFinales(models.Model):
     combinaciones_idcombinaciones = models.ForeignKey(Combinaciones, db_column='combinaciones_idcombinaciones', blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'comunidades_finales'
         verbose_name_plural = "ComunidadesFinales"
 
@@ -56,7 +54,6 @@ class Data(models.Model):
     numero_individuos = models.IntegerField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'data'
         verbose_name_plural = "Data"
 
