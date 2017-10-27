@@ -86,10 +86,10 @@ WSGI_APPLICATION = 'agrupamiento.wsgi.application'
 DATABASES = {
     'default': {
     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    'NAME': 'comunidades_prueba1db',
-    'USER': 'postgres',
-    'PASSWORD': 'admin',
-    'HOST': '127.0.0.1',
+    'NAME': 'd1u863jfjcqso6',
+    'USER': 'ghondmlormefnz',
+    'PASSWORD': '61e9f4340db57ce741428f39e6cb03de517709572578a1c76caac21f2dbf1b80',
+    'HOST': 'ec2-54-225-112-61.compute-1.amazonaws.com',
     'PORT': '5432',
     }
 }
